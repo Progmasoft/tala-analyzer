@@ -3,11 +3,11 @@
 
 {- | Compiler-backed document analysis for editor protocol hosts.
 
-The @visual-analyzer@ executable owns LSP process lifecycle via the Hackage
+The @tala-analyzer@ executable owns LSP process lifecycle via the Hackage
 @lsp@ package. This module remains transport-independent: it owns the
 language result and the zero-based scalar positions adapted at the boundary.
 -}
-module Visual.Analyzer
+module Progmasoft.TalaAnalyzer
     ( AnalysisMode (..)
     , AnalysisResult (..)
     , ProtocolPosition (..)
@@ -16,10 +16,10 @@ module Visual.Analyzer
     , analyzeDocument
     ) where
 
-import Visual.XSharp.AST
-import Visual.XSharp.Compiler
-import Visual.XSharp.Diagnostic
-import Visual.XSharp.Frontend
+import Progmasoft.Tala.AST
+import Progmasoft.Tala.Compiler
+import Progmasoft.Tala.Diagnostic
+import Progmasoft.Tala.Frontend
 
 data AnalysisMode = Syntax | Semantic | Full
     deriving (Bounded, Enum, Eq, Ord, Read, Show)

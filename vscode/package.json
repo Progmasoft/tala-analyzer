@@ -1,7 +1,7 @@
 {
-  "name": "visual-xsharp-analyzer",
-  "displayName": "Visual X# Analyzer",
-  "description": "Compiler-backed diagnostics for Visual X# through visual-analyzer LSP.",
+  "name": "tala-analyzer",
+  "displayName": "Tala Analyzer",
+  "description": "Compiler-backed diagnostics for Tala through tala-analyzer LSP.",
   "version": "0.1.0",
   "private": true,
   "publisher": "progmasoft",
@@ -10,23 +10,23 @@
     "vscode": "^1.100.0"
   },
   "categories": ["Programming Languages", "Linters"],
-  "activationEvents": ["onLanguage:visual-xsharp"],
+  "activationEvents": ["onLanguage:tala"],
   "main": "./out/extension.js",
   "contributes": {
     "languages": [
       {
-        "id": "visual-xsharp",
-        "aliases": ["Visual X#", "Visual XSharp"],
-        "extensions": [".vxs"]
+        "id": "tala",
+        "aliases": ["Tala", "Tala"],
+        "extensions": [".tala"]
       }
     ],
     "configuration": {
-      "title": "Visual X# Analyzer",
+      "title": "Tala Analyzer",
       "properties": {
-        "visualXsharp.analyzer.path": {
+        "tala.analyzer.path": {
           "type": "string",
-          "default": "visual-analyzer",
-          "description": "Path or command name of the visual-analyzer LSP executable."
+          "default": "tala-analyzer",
+          "description": "Path or command name of the tala-analyzer LSP executable."
         }
       }
     }

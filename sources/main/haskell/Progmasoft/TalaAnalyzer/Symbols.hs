@@ -8,16 +8,16 @@ The analyzer does not scan source text with a second grammar. An incomplete
 document can still have diagnostics even when its parser cannot build a tree;
 in that case the symbol response is empty rather than speculative.
 -}
-module Visual.Analyzer.Symbols (documentSymbols) where
+module Progmasoft.TalaAnalyzer.Symbols (documentSymbols) where
 
 import Data.Text (Text)
 import Data.Text qualified as Text
 import Language.LSP.Protocol.Types qualified as Lsp
-import Visual.Analyzer (ProtocolPosition (..))
-import Visual.Analyzer.Document (toUtf16Position)
-import Visual.XSharp.AST
-import Visual.XSharp.Frontend
-import Visual.XSharp.Parser (Token (..), TokenKind (..))
+import Progmasoft.TalaAnalyzer (ProtocolPosition (..))
+import Progmasoft.TalaAnalyzer.Document (toUtf16Position)
+import Progmasoft.Tala.AST
+import Progmasoft.Tala.Frontend
+import Progmasoft.Tala.Parser (Token (..), TokenKind (..))
 
 {- | Parse once through the compiler's syntax boundary, then expose nested
 class and method declarations. The method name's token is used for LSP's

@@ -13,7 +13,7 @@ import {
 let client: LanguageClient | undefined;
 
 /**
- * Starts the shared Visual X# analyzer for file-backed `.vxs` documents.
+ * Starts the shared Tala analyzer for file-backed `.tala` documents.
  *
  * @remarks
  * This extension is a thin host. The Haskell process owns language facts;
@@ -23,24 +23,24 @@ let client: LanguageClient | undefined;
  * @param context - VS Code's lifetime and disposable registry.
  */
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
-  const config = vscode.workspace.getConfiguration("visualXsharp.analyzer");
-  const command = config.get<string>("path", "visual-analyzer").trim();
+  const config = vscode.workspace.getConfiguration("tala.analyzer");
+  const command = config.get<string>("path", "tala-analyzer").trim();
   if (command.length === 0) {
     void vscode.window.showErrorMessage(
-      "Visual X# Analyzer path is empty. Set visualXsharp.analyzer.path.",
+      "Tala Analyzer path is empty. Set tala.analyzer.path.",
     );
     return;
   }
 
   const serverOptions: ServerOptions = { command, args: [] };
   const clientOptions: LanguageClientOptions = {
-    documentSelector: [{ scheme: "file", language: "visual-xsharp" }],
-    outputChannelName: "Visual X# Analyzer",
+    documentSelector: [{ scheme: "file", language: "tala" }],
+    outputChannelName: "Tala Analyzer",
   };
 
   client = new LanguageClient(
-    "visual-xsharp-analyzer",
-    "Visual X# Analyzer",
+    "tala-analyzer",
+    "Tala Analyzer",
     serverOptions,
     clientOptions,
   );
@@ -52,7 +52,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     client = undefined;
     const detail = error instanceof Error ? error.message : String(error);
     void vscode.window.showErrorMessage(
-      `Could not start visual-analyzer (${command}): ${detail}`,
+      `Could not start tala-analyzer (${command}): ${detail}`,
     );
   }
 }

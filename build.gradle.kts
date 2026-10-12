@@ -13,7 +13,7 @@ plugins {
     id("com.diffplug.spotless") version "8.9.0"
 }
 
-group = "com.progmasoft.visual.analyzer"
+group = "com.progmasoft.tala.analyzer"
 version = "0.3.2"
 
 repositories { mavenCentral() }

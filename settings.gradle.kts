@@ -3,4 +3,4 @@
  * SPDX-License-Identifier: MPL-2.0 WITH AdditionRef-Progmasoft-Exception-1.1
  */
 
-rootProject.name = "visual-analyzer-config"
+rootProject.name = "tala-analyzer-config"

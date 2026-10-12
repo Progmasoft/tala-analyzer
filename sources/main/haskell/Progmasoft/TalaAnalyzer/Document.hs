@@ -9,7 +9,7 @@ a non-BMP character occupies one compiler column but two LSP characters.
 This module is deliberately independent of JSON-RPC framing: the @lsp@
 package owns the transport and document synchronization.
 -}
-module Visual.Analyzer.Document
+module Progmasoft.TalaAnalyzer.Document
     ( utf16Width
     , utf16Column
     , toUtf16Position
@@ -20,7 +20,7 @@ module Visual.Analyzer.Document
 import Data.Char (ord)
 import Data.Text (Text)
 import Data.Text qualified as Text
-import Visual.Analyzer (ProtocolPosition (..), ProtocolRange (..))
+import Progmasoft.TalaAnalyzer (ProtocolPosition (..), ProtocolRange (..))
 
 -- | A Unicode scalar outside the BMP is encoded as a surrogate pair.
 utf16Width :: Char -> Int

@@ -9,7 +9,7 @@ plugins {
     id("org.jetbrains.dokka") version "2.2.0"
 }
 
-group = "com.progmasoft.visual.xsharp.analyzer"
+group = "com.progmasoft.tala.analyzer"
 version = "0.1.0"
 
 repositories {
@@ -39,7 +39,7 @@ tasks.patchPluginXml {
 
 dokka {
     dokkaPublications.html {
-        moduleName.set("Visual X# Analyzer IntelliJ Host")
+        moduleName.set("Tala Analyzer IntelliJ Host")
         outputDirectory.set(layout.buildDirectory.dir("dokka/html"))
     }
 }

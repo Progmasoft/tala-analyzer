@@ -7,7 +7,7 @@ diagnostic logging and transport failures go to stderr in the transport layer.
 module Main (main) where
 
 import System.Exit (ExitCode (..), exitWith)
-import Visual.Analyzer.Server (runAnalyzerServer)
+import Progmasoft.TalaAnalyzer.Server (runAnalyzerServer)
 
 main :: IO ()
 main = do
