@@ -1,7 +1,7 @@
 -- SPDX-FileCopyrightText: 2026 Progmasoft <support@progmasoft.com>
 -- SPDX-License-Identifier: MPL-2.0 WITH AdditionRef-Progmasoft-Exception-1.1
 
-{- | Visual X# language server over standard LSP JSON-RPC.
+{- | Tala language server over standard LSP JSON-RPC.
 
 The Hackage @lsp@ package owns Content-Length framing, initialization,
 shutdown, JSON-RPC dispatch, and the versioned virtual file system. This
@@ -9,7 +9,7 @@ module deliberately does not implement a second transport or parser. Its
 responsibility is to feed the compiler the current document and adapt
 compiler diagnostics to LSP's UTF-16 coordinate system.
 -}
-module Visual.Analyzer.Server
+module Progmasoft.TalaAnalyzer.Server
     ( runAnalyzerServer
     , documentDiagnostics
     , toLspDiagnostic
@@ -22,11 +22,11 @@ import Language.LSP.Protocol.Message
 import Language.LSP.Protocol.Types qualified as Lsp
 import Language.LSP.Server
 import Language.LSP.VFS (virtualFileText, virtualFileVersion)
-import Visual.Analyzer
-import Visual.Analyzer.Document (toUtf16Range)
-import Visual.Analyzer.Symbols (documentSymbols)
-import Visual.XSharp.Diagnostic (DiagnosticSeverity (..))
-import Visual.XSharp.Frontend (CompilerInput (..))
+import Progmasoft.TalaAnalyzer
+import Progmasoft.TalaAnalyzer.Document (toUtf16Range)
+import Progmasoft.TalaAnalyzer.Symbols (documentSymbols)
+import Progmasoft.Tala.Diagnostic (DiagnosticSeverity (..))
+import Progmasoft.Tala.Frontend (CompilerInput (..))
 
 {- | Start the server on stdin/stdout. All library logging uses stderr, so
 stdout remains an unpolluted JSON-RPC stream. The integer is the library's
@@ -57,7 +57,7 @@ serverDefinition =
                             Nothing
                         )
                 , optServerInfo =
-                    Just (Lsp.ServerInfo (Text.pack "visual-analyzer") (Just (Text.pack "0.3.2")))
+                    Just (Lsp.ServerInfo (Text.pack "tala-analyzer") (Just (Text.pack "0.3.2")))
                 }
         }
 
@@ -131,7 +131,7 @@ toLspDiagnostic source problem =
         (Just (toLspSeverity (analyzerSeverity problem)))
         (Just (Lsp.InR (Text.pack (analyzerCode problem))))
         Nothing
-        (Just (Text.pack "Visual X#"))
+        (Just (Text.pack "Tala"))
         (Text.pack (analyzerMessage problem))
         Nothing
         Nothing

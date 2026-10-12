@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MPL-2.0 WITH AdditionRef-Progmasoft-Exception-1.1
  */
 
-package com.progmasoft.visual.analyzer.config
+package com.progmasoft.tala.analyzer.config
 
 /** Compiler frontend boundary at which editor analysis stops. */
 enum class AnalysisMode {
@@ -21,7 +21,7 @@ enum class AnalysisMode {
 data class DiagnosticsConfiguration(
   /** Enables compiler diagnostics. */
   val compiler: Boolean,
-  /** Enables Visual Linter diagnostics. */
+  /** Enables talalint diagnostics. */
   val linter: Boolean,
   /** Recomputes diagnostics after document edits. */
   val onChange: Boolean,

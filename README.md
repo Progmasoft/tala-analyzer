@@ -1,10 +1,10 @@
 <!-- SPDX-FileCopyrightText: 2026 Progmasoft <support@progmasoft.com> -->
 <!-- SPDX-License-Identifier: MPL-2.0 WITH AdditionRef-Progmasoft-Exception-1.1 -->
 
-# Visual Analyzer
+# tala-analyzer
 
-Visual Analyzer is the compiler-backed language analysis layer used by Visual X# editor integrations. The
-`visual-analyzer` executable is a standard LSP server over stdin/stdout. Editors launch the process and speak
+tala-analyzer is the compiler-backed language analysis layer used by Tala editor integrations. The
+`tala-analyzer` executable is a standard LSP server over stdin/stdout. Editors launch the process and speak
 Content-Length-framed JSON-RPC 2.0; there is no proprietary Protobuf transport.
 
 The first implemented boundary reuses the compiler's lexer, parser, resolver, type checker, and CorePrep pipeline. Compiler
@@ -13,16 +13,16 @@ The Hackage `lsp` package owns framing, lifecycle, incremental document synchron
 publishes compiler diagnostics on document open/change, clears them on close, and exposes hierarchical document symbols
 from the shared parsed AST. It does not claim hover, completion, or workspace-wide indexing yet.
 
-Run the executable from the compiler Cabal project with `cabal run visual-analyzer`. It is intended to be launched by an
+Run the executable from the compiler Cabal project with `cabal run tala-analyzer`. It is intended to be launched by an
 LSP client, not used as a human-facing CLI. Ordinary logs are sent to stderr so stdout contains protocol frames only.
 
-The Kotlin module under `sources/main/kotlin` owns the typed `Visual.Analyzer.kts` configuration surface, canonical
+The Kotlin module under `sources/main/kotlin` owns the typed `tala-analyzer.kts` configuration surface, canonical
 defaults, validation, and immutable snapshots. Script discovery and evaluation are intentionally outside this module.
 
 ## Configuration model
 
 The Kotlin configuration module and the Haskell language server are separate components. The module defines the public
-configuration data model and validates values; this does not mean that the LSP process evaluates `Visual.Analyzer.kts`.
+configuration data model and validates values; this does not mean that the LSP process evaluates `tala-analyzer.kts`.
 Script discovery, execution, and forwarding settings into the running analyzer remain a distinct integration step.
 
 The current model supports three frontend boundaries and groups settings by their owner:
@@ -66,9 +66,9 @@ the returned configuration do not change when a caller later edits a DSL scope.
 The repository wrapper and JDK 25 are the supported build environment for the Kotlin configuration module:
 
 ```powershell
-.\ProjectSystem\gradlew.bat -p Analyzer test
-.\ProjectSystem\gradlew.bat -p Analyzer spotlessCheck
-.\ProjectSystem\gradlew.bat -p Analyzer dokkaGenerateHtml
+.\Tazel\gradlew.bat -p Analyzer test
+.\Tazel\gradlew.bat -p Analyzer spotlessCheck
+.\Tazel\gradlew.bat -p Analyzer dokkaGenerateHtml
 ```
 
 The first command exercises default values, validation failures, nested-scope behavior, and snapshot immutability. The
@@ -77,10 +77,10 @@ under Gradle's `build/` directory is local output and is not committed.
 
 The LSP executable has its own Cabal test suite. It launches the built binary as a subprocess and checks JSON-RPC
 initialization, document open/change/close, diagnostics, and document symbols. For a focused local run, start from
-`Compiler/`:
+`Talac/`:
 
 ```powershell
-cabal test visual-analyzer-tests
+cabal test tala-analyzer-tests
 ```
 
 No test requires a Marketplace account or an editor installation. Host-specific smoke testing is performed by the

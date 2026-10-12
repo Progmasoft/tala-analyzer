@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MPL-2.0 WITH AdditionRef-Progmasoft-Exception-1.1
  */
 
-package com.progmasoft.visual.xsharp.analyzer.intellij
+package com.progmasoft.tala.analyzer.intellij
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.project.Project
@@ -13,19 +13,19 @@ import com.intellij.platform.lsp.api.ProjectWideLspClientDescriptor
 
 /**
  * IntelliJ is a host for the shared analyzer process, never a second frontend.
- * The first host slice starts one project-wide LSP client when a .vxs file is
+ * The first host slice starts one project-wide LSP client when a .tala file is
  * opened. Configuration and deeper IDE features can be layered on this later.
  *
- * @see VisualXsharpLspClientDescriptor
+ * @see TalaLspClientDescriptor
  */
-internal class VisualXsharpLspIntegrationProvider : LspIntegrationProvider {
+internal class TalaLspIntegrationProvider : LspIntegrationProvider {
     override fun fileOpened(
         project: Project,
         file: VirtualFile,
         clientStarter: LspIntegrationProvider.LspClientStarter,
     ) {
-        if (file.extension == "vxs") {
-            clientStarter.ensureClientStarted(VisualXsharpLspClientDescriptor(project))
+        if (file.extension == "tala") {
+            clientStarter.ensureClientStarted(TalaLspClientDescriptor(project))
         }
     }
 }
@@ -38,13 +38,13 @@ internal class VisualXsharpLspIntegrationProvider : LspIntegrationProvider {
  *
  * @param project The IntelliJ project owning the LSP client.
  */
-private class VisualXsharpLspClientDescriptor(project: Project) :
-    ProjectWideLspClientDescriptor(project, "Visual X# Analyzer") {
-    override fun isSupportedFile(file: VirtualFile): Boolean = file.extension == "vxs"
+private class TalaLspClientDescriptor(project: Project) :
+    ProjectWideLspClientDescriptor(project, "Tala Analyzer") {
+    override fun isSupportedFile(file: VirtualFile): Boolean = file.extension == "tala"
 
     override fun createCommandLine(): GeneralCommandLine {
-        val configured = System.getenv("VISUAL_ANALYZER_PATH")?.trim().orEmpty()
-        val executable = configured.ifEmpty { "visual-analyzer" }
+        val configured = System.getenv("TALA_ANALYZER_PATH")?.trim().orEmpty()
+        val executable = configured.ifEmpty { "tala-analyzer" }
         return GeneralCommandLine(executable)
     }
 }

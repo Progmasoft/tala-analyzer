@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MPL-2.0 WITH AdditionRef-Progmasoft-Exception-1.1
  */
 
-package com.progmasoft.visual.analyzer.config
+package com.progmasoft.tala.analyzer.config
 
 /**
  * Prevents nested analyzer configuration blocks from resolving outer-scope properties by accident.
@@ -16,7 +16,7 @@ class DiagnosticsScope {
   /** Whether compiler diagnostics are requested. */
   var compiler: Boolean = true
 
-  /** Whether Visual Linter diagnostics are requested. */
+  /** Whether talalint diagnostics are requested. */
   var linter: Boolean = true
 
   /** Whether diagnostics are refreshed while the document changes. */
@@ -57,7 +57,7 @@ class PerformanceScope {
 }
 
 /**
- * Typed state for `Visual.Analyzer.kts`.
+ * Typed state for `tala-analyzer.kts`.
  *
  * This scope only defines defaults, validation, and an immutable snapshot. It does not discover,
  * compile, load, or execute Kotlin scripts; that evaluator boundary remains separate.

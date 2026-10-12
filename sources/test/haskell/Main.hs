@@ -15,15 +15,15 @@ import Language.LSP.Test
     , runSession
     , waitForDiagnostics
     )
-import Paths_visual_analyzer (getDataFileName)
+import Paths_tala_analyzer (getDataFileName)
 import System.Exit (exitFailure)
 import System.FilePath (takeDirectory)
-import Visual.Analyzer
-import Visual.Analyzer.Document
-import Visual.Analyzer.Server (documentDiagnostics, toLspDiagnostic)
-import Visual.Analyzer.Symbols (documentSymbols)
-import Visual.XSharp.Diagnostic (DiagnosticSeverity (..), DiagnosticStage (..))
-import Visual.XSharp.Frontend
+import Progmasoft.TalaAnalyzer
+import Progmasoft.TalaAnalyzer.Document
+import Progmasoft.TalaAnalyzer.Server (documentDiagnostics, toLspDiagnostic)
+import Progmasoft.TalaAnalyzer.Symbols (documentSymbols)
+import Progmasoft.Tala.Diagnostic (DiagnosticSeverity (..), DiagnosticStage (..))
+import Progmasoft.Tala.Frontend
 
 main :: IO ()
 main = do
@@ -40,7 +40,7 @@ main = do
     check "line lookup handles out-of-range line" (lineAt (pack "a") 5 == pack "")
     check "position conversion uses requested line" utf16Position
     check "range conversion preserves end-exclusive semantics" utf16Range
-    check "valid document clears old diagnostics" (null (documentDiagnostics "Program.vxs" (pack validSource)))
+    check "valid document clears old diagnostics" (null (documentDiagnostics "Program.tala" (pack validSource)))
     check "invalid document publishes compiler code" lspDiagnosticCode
     check "invalid document publishes an error severity" lspDiagnosticSeverity
     check "invalid document reports compiler origin" lspDiagnosticOrigin
@@ -50,7 +50,7 @@ main = do
     check "document symbols nest methods within classes" nestedMethodSymbol
     check "class selection range covers its identifier only" classSelectionRange
     check "method selection range covers its identifier only" methodSelectionRange
-    check "invalid syntax does not manufacture document symbols" (null (documentSymbols "Broken.vxs" (pack "@")))
+    check "invalid syntax does not manufacture document symbols" (null (documentSymbols "Broken.tala" (pack "@")))
     integrationPassed <- lspLifecycle
     check "stdio LSP lifecycle publishes and clears compiler diagnostics" integrationPassed
 
@@ -69,28 +69,28 @@ validSource =
         ]
 
 syntaxAnalysis :: Bool
-syntaxAnalysis = case analyzeDocument Syntax (CompilerInput "Program.vxs" validSource) of
+syntaxAnalysis = case analyzeDocument Syntax (CompilerInput "Program.tala" validSource) of
     Right SyntaxResult {} -> True
     _ -> False
 
 fullAnalysis :: Bool
-fullAnalysis = case analyzeDocument Full (CompilerInput "Program.vxs" validSource) of
+fullAnalysis = case analyzeDocument Full (CompilerInput "Program.tala" validSource) of
     Right FullResult {} -> True
     _ -> False
 
 protocolPositions :: Bool
-protocolPositions = case analyzeDocument Syntax (CompilerInput "Broken.vxs" "@") of
+protocolPositions = case analyzeDocument Syntax (CompilerInput "Broken.tala" "@") of
     Left [problem] -> case analyzerRange problem of
-        Just (ProtocolRange (ProtocolPosition 0 0) (ProtocolPosition 0 1)) -> analyzerCode problem == "VXL0001"
+        Just (ProtocolRange (ProtocolPosition 0 0) (ProtocolPosition 0 1)) -> analyzerCode problem == "TAL0001"
         _ -> False
     _ -> False
 
 syntaxModeStopsAtItsBoundary :: Bool
 syntaxModeStopsAtItsBoundary =
     let source = "class Program { int Value() { return MissingName; } }"
-        input = CompilerInput "Unknown.vxs" source
+        input = CompilerInput "Unknown.tala" source
      in case (analyzeDocument Syntax input, analyzeDocument Semantic input) of
-            (Right SyntaxResult {}, Left problems) -> any ((== "VXN0001") . analyzerCode) problems
+            (Right SyntaxResult {}, Left problems) -> any ((== "TAN0001") . analyzerCode) problems
             _ -> False
 
 utf16Position :: Bool
@@ -107,20 +107,20 @@ utf16Range =
 
 lspDiagnosticCode :: Bool
 lspDiagnosticCode =
-    case documentDiagnostics "Broken.vxs" (pack "@") of
-        Lsp.Diagnostic _ _ (Just (Lsp.InR code)) _ _ _ _ _ _ : _ -> code == pack "VXL0001"
+    case documentDiagnostics "Broken.tala" (pack "@") of
+        Lsp.Diagnostic _ _ (Just (Lsp.InR code)) _ _ _ _ _ _ : _ -> code == pack "TAL0001"
         _ -> False
 
 lspDiagnosticSeverity :: Bool
 lspDiagnosticSeverity =
-    case documentDiagnostics "Broken.vxs" (pack "@") of
+    case documentDiagnostics "Broken.tala" (pack "@") of
         Lsp.Diagnostic _ (Just Lsp.DiagnosticSeverity_Error) _ _ _ _ _ _ _ : _ -> True
         _ -> False
 
 lspDiagnosticOrigin :: Bool
 lspDiagnosticOrigin =
-    case documentDiagnostics "Broken.vxs" (pack "@") of
-        Lsp.Diagnostic _ _ _ _ (Just source) _ _ _ _ : _ -> source == pack "Visual X#"
+    case documentDiagnostics "Broken.tala" (pack "@") of
+        Lsp.Diagnostic _ _ _ _ (Just source) _ _ _ _ : _ -> source == pack "Tala"
         _ -> False
 
 {- | Compiler spans count Unicode scalars while LSP spans count UTF-16 units.
@@ -131,7 +131,7 @@ lspDiagnosticUtf16Range :: Bool
 lspDiagnosticUtf16Range =
     let problem =
             AnalyzerDiagnostic
-                "VXL9001"
+                "TAL9001"
                 Error
                 LexerStage
                 (Just (ProtocolRange (ProtocolPosition 0 1) (ProtocolPosition 0 6)))
@@ -146,20 +146,20 @@ location, so the server maps it to an empty range at the document origin.
 -}
 unlocatedDiagnosticRange :: Bool
 unlocatedDiagnosticRange =
-    let problem = AnalyzerDiagnostic "VXB0001" Warning CorePrepStage Nothing "no source range"
+    let problem = AnalyzerDiagnostic "TAB0001" Warning CorePrepStage Nothing "no source range"
      in case toLspDiagnostic (pack "") problem of
             Lsp.Diagnostic (Lsp.Range (Lsp.Position 0 0) (Lsp.Position 0 0)) _ _ _ _ _ _ _ _ -> True
             _ -> False
 
 parsedClassSymbol :: Bool
 parsedClassSymbol =
-    case documentSymbols "Program.vxs" (pack validSource) of
+    case documentSymbols "Program.tala" (pack validSource) of
         Lsp.DocumentSymbol name _ Lsp.SymbolKind_Class _ _ _ _ _ : _ -> name == pack "Program"
         _ -> False
 
 nestedMethodSymbol :: Bool
 nestedMethodSymbol =
-    case documentSymbols "Program.vxs" (pack validSource) of
+    case documentSymbols "Program.tala" (pack validSource) of
         Lsp.DocumentSymbol _ _ _ _ _ _ _ (Just children) : _ ->
             case children of
                 Lsp.DocumentSymbol name _ Lsp.SymbolKind_Method _ _ _ _ _ : _ -> name == pack "Main"
@@ -168,14 +168,14 @@ nestedMethodSymbol =
 
 classSelectionRange :: Bool
 classSelectionRange =
-    case documentSymbols "Program.vxs" (pack validSource) of
+    case documentSymbols "Program.tala" (pack validSource) of
         Lsp.DocumentSymbol _ _ _ _ _ _ selection _ : _ ->
             selection == Lsp.Range (Lsp.Position 1 13) (Lsp.Position 1 20)
         _ -> False
 
 methodSelectionRange :: Bool
 methodSelectionRange =
-    case documentSymbols "Program.vxs" (pack validSource) of
+    case documentSymbols "Program.tala" (pack validSource) of
         [Lsp.DocumentSymbol _ _ _ _ _ _ _ (Just children)] ->
             case children of
                 Lsp.DocumentSymbol _ _ _ _ _ _ selection _ : _ ->
@@ -189,10 +189,10 @@ implementation or ad-hoc Content-Length parser can make this pass.
 -}
 lspLifecycle :: IO Bool
 lspLifecycle = do
-    validFile <- getDataFileName "Tests/Data/Valid.vxs"
+    validFile <- getDataFileName "Tests/Data/Valid.tala"
     let root = takeDirectory validFile
-    runSession "visual-analyzer" fullLatestClientCaps root $ do
-        document <- openDoc "Valid.vxs" (Lsp.LanguageKind_Custom (pack "visual-xsharp"))
+    runSession "tala-analyzer" fullLatestClientCaps root $ do
+        document <- openDoc "Valid.tala" (Lsp.LanguageKind_Custom (pack "tala"))
         initial <- waitForDiagnostics
         symbolResult <- getDocumentSymbols document
         changeDoc
