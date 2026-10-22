@@ -25,6 +25,7 @@ import Language.LSP.VFS (virtualFileText, virtualFileVersion)
 import Progmasoft.TalaAnalyzer
 import Progmasoft.TalaAnalyzer.Document (toUtf16Range)
 import Progmasoft.TalaAnalyzer.Symbols (documentSymbols)
+import Progmasoft.TalaAnalyzer.Version (analyzerName, analyzerVersion)
 import Progmasoft.Tala.Diagnostic (DiagnosticSeverity (..))
 import Progmasoft.Tala.Frontend (CompilerInput (..))
 
@@ -39,7 +40,7 @@ serverDefinition :: ServerDefinition ()
 serverDefinition =
     ServerDefinition
         { defaultConfig = ()
-        , configSection = Text.pack "visualAnalyzer"
+        , configSection = Text.pack "tala.analyzer"
         , parseConfig = \_ _ -> Right ()
         , onConfigChange = \_ -> pure ()
         , doInitialize = \environment _ -> pure (Right environment)
@@ -57,7 +58,7 @@ serverDefinition =
                             Nothing
                         )
                 , optServerInfo =
-                    Just (Lsp.ServerInfo (Text.pack "tala-analyzer") (Just (Text.pack "0.3.3")))
+                    Just (Lsp.ServerInfo (Text.pack analyzerName) (Just (Text.pack analyzerVersion)))
                 }
         }
 

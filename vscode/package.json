@@ -16,7 +16,7 @@
     "languages": [
       {
         "id": "tala",
-        "aliases": ["Tala", "Tala"],
+        "aliases": ["Tala"],
         "extensions": [".tala"]
       }
     ],

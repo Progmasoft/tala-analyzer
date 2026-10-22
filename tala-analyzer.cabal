@@ -22,9 +22,13 @@ data-files:
 library
     exposed-modules:
         Progmasoft.TalaAnalyzer
+        Progmasoft.TalaAnalyzer.CommandLine
         Progmasoft.TalaAnalyzer.Document
         Progmasoft.TalaAnalyzer.Server
         Progmasoft.TalaAnalyzer.Symbols
+        Progmasoft.TalaAnalyzer.Version
+    other-modules: Paths_tala_analyzer
+    autogen-modules: Paths_tala_analyzer
     hs-source-dirs: sources/main/haskell
     build-depends:
         base >=4.20 && <4.23,
