@@ -1,0 +1,177 @@
+# SPDX-FileCopyrightText: 2026 Progmasoft <support@progmasoft.com>
+# SPDX-License-Identifier: MPL-2.0 WITH AdditionRef-Progmasoft-Exception-1.1
+
+name: CI
+
+on:
+  pull_request:
+  # The default branch only. A branch that has a pull request is tested by
+  # the pull request; testing its pushes as well ran every job twice.
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  haskell:
+    name: Haskell (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-26.04, windows-2025, macos-26]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install GHC and Cabal
+        uses: haskell/ghcup-setup@269e121e9e7528761aca5a606a53fe9d04cd6658 # v1.2.3
+        with:
+          ghc: 9.10.3
+          cabal: 3.16.1.0
+
+      # Cabal clones Progmasoft/tala below a directory named after a 64-digit
+      # hash; some of its paths are then longer than Windows allows by default.
+      - name: Allow long paths in Git
+        if: runner.os == 'Windows'
+        shell: bash
+        run: git config --global core.longpaths true
+
+      - name: Pin the SDK of the selected Xcode
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          # The Command Line Tools SDK can be newer than the linker of the
+          # selected Xcode: SDK 27.0 lists arm64e.x1, which ld of Xcode 26
+          # rejects as a malformed file. Homebrew clang's configuration files
+          # and the GHC installation name that SDK by path, which overrides
+          # SDKROOT, so every such reference is pointed at the selected SDK.
+          sdk="$(xcrun --show-sdk-path)"
+          echo "SDKROOT=$sdk" >> "$GITHUB_ENV"
+          clt='/Library/Developer/CommandLineTools/SDKs/MacOSX[0-9.]*sdk'
+          libdir="$(ghc --print-libdir)"
+          changed=0
+          for file in "$(brew --prefix)"/etc/clang/*.cfg \
+              "$libdir/settings" "$libdir"/package.conf.d/*.conf; do
+            if [ -f "$file" ] && grep -Eq "$clt" "$file"; then
+              echo "Pinning $sdk in $file"
+              sed -E -i '' "s#$clt#$sdk#g" "$file"
+              changed=1
+            fi
+          done
+          if [ "$changed" = 1 ]; then
+            ghc-pkg recache --global
+          else
+            echo "No reference to the Command Line Tools SDK was found"
+          fi
+
+      - name: Update the package index
+        shell: bash
+        run: cabal update
+
+      # The compiler packages are fetched from Progmasoft/tala at the pinned
+      # commit and built with the tool; warnings are errors for the tool only.
+      - name: Build
+        shell: bash
+        run: cabal build all
+
+      - name: Test
+        shell: bash
+        run: cabal test all
+
+      - name: Check package metadata
+        shell: bash
+        run: cabal check
+
+  kotlin:
+    name: Kotlin configuration (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-26.04, windows-2025]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install JDK 25
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+
+      # Spotless, the Kotlin compiler with warnings as errors, and every test.
+      - name: Check
+        shell: bash
+        run: ./gradlew check jacocoTestReport --no-daemon
+
+  intellij:
+    name: IntelliJ Platform plugin
+    runs-on: ubuntu-26.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install JDK 25
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+
+      - name: Compile the plugin and its documentation
+        shell: bash
+        run: ./gradlew -p intellij compileKotlin processResources dokkaGenerateHtml --no-daemon
+
+  vscode:
+    name: VS Code extension
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Node 24
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: vscode/package-lock.json
+
+      - name: Check the extension types
+        shell: bash
+        working-directory: vscode
+        run: |
+          npm ci
+          npm run check
+
+  required:
+    name: CI Required
+    runs-on: ubuntu-26.04
+    if: always()
+    needs: [haskell, kotlin, intellij, vscode]
+    steps:
+      - name: Require every job
+        run: |
+          test '${{ needs.haskell.result }}' = success
+          test '${{ needs.kotlin.result }}' = success
+          test '${{ needs.intellij.result }}' = success
+          test '${{ needs.vscode.result }}' = success

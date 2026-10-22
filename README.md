@@ -3,6 +3,10 @@
 
 # tala-analyzer
 
+tala-analyzer is the language server of [Tala](https://tala.run/). It moved from the
+[compiler repository](https://github.com/Progmasoft/tala) with its history on 2026-10-18 and starts its own versions at
+0.1.0.
+
 tala-analyzer is the compiler-backed language analysis layer used by Tala editor integrations. The
 `tala-analyzer` executable is a standard LSP server over stdin/stdout. Editors launch the process and speak
 Content-Length-framed JSON-RPC 2.0; there is no proprietary Protobuf transport.
@@ -66,9 +70,9 @@ the returned configuration do not change when a caller later edits a DSL scope.
 The repository wrapper and JDK 25 are the supported build environment for the Kotlin configuration module:
 
 ```powershell
-.\gradlew.bat -p Ecosystem/tala-analyzer test
-.\gradlew.bat -p Ecosystem/tala-analyzer spotlessCheck
-.\gradlew.bat -p Ecosystem/tala-analyzer dokkaGenerateHtml
+.\gradlew.bat test
+.\gradlew.bat spotlessCheck
+.\gradlew.bat dokkaGenerateHtml
 ```
 
 The first command exercises default values, validation failures, nested-scope behavior, and snapshot immutability. The
@@ -76,12 +80,17 @@ formatter check covers Kotlin and Gradle Kotlin scripts. Dokka renders the KDoc 
 under Gradle's `build/` directory is local output and is not committed.
 
 The LSP executable has its own Cabal test suite. It launches the built binary as a subprocess and checks JSON-RPC
-initialization, document open/change/close, diagnostics, and document symbols. For a focused local run, start from
-`Talac/`:
+initialization, document open/change/close, diagnostics, and document symbols. The analyzer uses the compiler
+through `tala-tooling`; until the compiler packages are on Hackage, `cabal.project` fetches them from
+Progmasoft/tala, pinned to the commit of the `tala-0.1.0` release, so the first build compiles them too:
 
 ```powershell
-cabal test tala-analyzer-tests
+cabal update
+cabal build all
+cabal test all
 ```
+
+You need GHC 9.10 and Cabal 3.16, and JDK 25 for the Kotlin modules.
 
 No test requires a Marketplace account or an editor installation. Host-specific smoke testing is performed by the
 IntelliJ and VS Code modules described in their adjacent READMEs.
