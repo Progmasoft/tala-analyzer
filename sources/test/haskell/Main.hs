@@ -15,13 +15,16 @@ import Language.LSP.Test
     , runSession
     , waitForDiagnostics
     )
-import Paths_tala_analyzer (getDataFileName)
+import Data.Version (showVersion)
+import Paths_tala_analyzer (getDataFileName, version)
 import System.Exit (exitFailure)
 import System.FilePath (takeDirectory)
 import Progmasoft.TalaAnalyzer
 import Progmasoft.TalaAnalyzer.Document
 import Progmasoft.TalaAnalyzer.Server (documentDiagnostics, toLspDiagnostic)
+import Progmasoft.TalaAnalyzer.CommandLine
 import Progmasoft.TalaAnalyzer.Symbols (documentSymbols)
+import Progmasoft.TalaAnalyzer.Version (analyzerVersion)
 import Progmasoft.Tala.Diagnostic (DiagnosticSeverity (..), DiagnosticStage (..))
 import Progmasoft.Tala.Frontend
 
@@ -51,6 +54,14 @@ main = do
     check "class selection range covers its identifier only" classSelectionRange
     check "method selection range covers its identifier only" methodSelectionRange
     check "invalid syntax does not manufacture document symbols" (null (documentSymbols "Broken.tala" (pack "@")))
+    check "no argument serves over stdio" (parseCommandLine [] == Right Serve)
+    check "--stdio names the default transport" (parseCommandLine ["--stdio"] == Right Serve)
+    check "--version and -v print the version" (all ((== Right ShowVersion) . parseCommandLine . pure) ["--version", "-v"])
+    check "--help and -h print the usage" (all ((== Right ShowHelp) . parseCommandLine . pure) ["--help", "-h"])
+    check "an unknown option is refused" (parseCommandLine ["--tcp"] == Left (UnknownOption "--tcp"))
+    check "a file argument is refused" (parseCommandLine ["Program.tala"] == Left (UnexpectedArgument "Program.tala"))
+    check "two options are refused" (parseCommandLine ["--stdio", "--version"] == Left (TooManyArguments ["--stdio", "--version"]))
+    check "the version is the package version" (analyzerVersion == showVersion version)
     integrationPassed <- lspLifecycle
     check "stdio LSP lifecycle publishes and clears compiler diagnostics" integrationPassed
 

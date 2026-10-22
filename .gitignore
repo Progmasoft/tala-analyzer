@@ -9,6 +9,7 @@ out/
 .intellijPlatform/
 *.iml
 dist-newstyle/
+dist/
 node_modules/
 vscode/out/
 *.vsix

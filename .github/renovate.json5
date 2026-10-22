@@ -22,11 +22,12 @@
   dependencyDashboard: true,
   vulnerabilityAlerts: { enabled: false },
 
-  enabledManagers: ["github-actions", "gradle", "gradle-wrapper", "npm"],
+  enabledManagers: ["github-actions", "gradle", "gradle-wrapper", "npm", "gomod"],
 
   packageRules: [
     { matchManagers: ["github-actions"], groupName: "GitHub Actions" },
     { matchManagers: ["gradle", "gradle-wrapper"], groupName: "Gradle plugins and libraries" },
+    { matchManagers: ["gomod"], groupName: "Go helpers" },
     { matchManagers: ["npm"], groupName: "VS Code extension" },
 
     // The type definitions must not be newer than the Node.js runtime the
