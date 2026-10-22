@@ -6,6 +6,7 @@
 build/
 out/
 .idea/
+.intellijPlatform/
 *.iml
 dist-newstyle/
 node_modules/
