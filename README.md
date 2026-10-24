@@ -81,8 +81,8 @@ under Gradle's `build/` directory is local output and is not committed.
 
 The LSP executable has its own Cabal test suite. It launches the built binary as a subprocess and checks JSON-RPC
 initialization, document open/change/close, diagnostics, and document symbols. The analyzer uses the compiler
-through `tala-tooling`; until the compiler packages are on Hackage, `cabal.project` fetches them from
-Progmasoft/tala, pinned to the commit of the `tala-0.1.0` release, so the first build compiles them too:
+through the [`tala-tooling`](https://hackage.haskell.org/package/tala-tooling) package from Hackage, so the first
+build compiles it and the compiler packages it depends on:
 
 ```powershell
 cabal update

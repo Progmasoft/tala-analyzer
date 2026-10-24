@@ -8,7 +8,4 @@ package project
 var Current = Project{
 	Name:       "tala-analyzer",
 	Components: []Component{Haskell, Kotlin, IntelliJ, VSCode},
-	Pins: []Pin{
-		{Name: "tala", Location: "https://github.com/Progmasoft/tala"},
-	},
 }
