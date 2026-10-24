@@ -98,8 +98,8 @@ IntelliJ and VS Code modules described in their adjacent READMEs.
 ## Developer helpers
 
 The Go programs in [helpers](helpers/README.md) run the same commands as CI: `prebuild install` sets up a host,
-`develop check` runs every gate, `develop bundle` packs a release archive for this host, and `develop version` and
-`develop pin` keep the version files and the pinned commits in order.
+`develop check` runs every gate, `develop bundle` packs a release archive for this host, and `develop version` keeps
+the version files in order.
 
 ```powershell
 go run ./helpers/cmd/prebuild install
