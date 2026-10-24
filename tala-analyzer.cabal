@@ -64,3 +64,7 @@ test-suite tala-analyzer-tests
         tala-tooling
     build-tool-depends: tala-analyzer:tala-analyzer
     default-language: GHC2024
+
+source-repository head
+    type: git
+    location: https://github.com/Progmasoft/tala-analyzer

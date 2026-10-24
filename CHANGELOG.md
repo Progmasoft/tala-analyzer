@@ -5,6 +5,9 @@
 
 ## Unreleased
 
+- The compiler packages, `tala-tooling` and the packages it depends on, come
+  from Hackage instead of a pinned commit of Progmasoft/tala.
+
 ## 0.1.0 - 2026-10-22
 
 The first release of tala-analyzer from a repository of its own. Until now the
