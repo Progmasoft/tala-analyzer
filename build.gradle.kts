@@ -14,7 +14,7 @@ plugins {
 }
 
 group = "com.progmasoft.tala.analyzer"
-version = "0.1.0"
+version = "0.1.1"
 
 repositories { mavenCentral() }
 
