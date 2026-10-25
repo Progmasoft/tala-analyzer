@@ -5,6 +5,8 @@
 
 ## Unreleased
 
+## 0.1.1 - 2026-10-25
+
 - The compiler packages, `tala-tooling` and the packages it depends on, come
   from Hackage instead of a pinned commit of Progmasoft/tala.
 
