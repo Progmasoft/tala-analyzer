@@ -60,7 +60,7 @@ declarationSymbol source tokens insideType declaration =
                     | member <- cases
                     ]
                 )
-        FunctionDeclaration spanValue name _ _ parameters _ isStatic _ ->
+        FunctionDeclaration spanValue name _ _ parameters _ isStatic _ _ ->
             let symbolRange = spanRange source spanValue
                 selection = selectionRange source tokens spanValue name
                 kind = if insideType then Lsp.SymbolKind_Method else Lsp.SymbolKind_Function
