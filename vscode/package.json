@@ -39,6 +39,9 @@
   "dependencies": {
     "vscode-languageclient": "10.1.2"
   },
+  "overrides": {
+    "minimatch": "^11.0.5"
+  },
   "devDependencies": {
     "@types/node": "24.19.2",
     "@types/vscode": "1.100.0",
